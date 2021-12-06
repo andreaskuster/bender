@@ -178,6 +178,13 @@ impl<'sess, 'ctx: 'sess> Session<'ctx> {
             let mut ranks: HashMap<DependencyRef, usize> =
                 graph.keys().map(|&id| (id, 0)).collect();
             let mut pending = HashSet::new();
+            for name in self.manifest.dependencies.keys() {
+                if !(names.contains_key(name)) {
+                    return Err(Error::new(format!(
+                        "There is a mismatch in the lock file, you may need to run `bender update`."
+                    )));
+                }
+            }
             pending.extend(self.manifest.dependencies.keys().map(|name| names[name]));
             while !pending.is_empty() {
                 let mut current_pending = HashSet::new();
